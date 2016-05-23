@@ -1,0 +1,38 @@
+<%= "\uFEFF" %>using UnityEngine;
+using UnityEngine.Events;
+using Protocol;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace HTTP{
+	public class ApiClient : SingletonMonoBehaviour<ApiClient> {
+
+		HTTPRequester requester;
+		string ipAddr;
+
+		override protected void Awake()
+		{
+			requester = new HTTPRequester(this);
+			var setting = ScriptableObjectLoader.Instance.Load<Setup> ();
+			ipAddr = setting.IpAddr;
+		}
+
+<% APICoder.routes.each do |route| -%>
+  <%- route_title = route.title.to_s.camelize -%>
+  <%- if route.parameters.present? -%>
+		public void Request<%= route_title %>(Request<%= route_title %> param){
+    requester.<%= route.method.downcase.camelize %><Request<%= route_title %>,Response<%= route_title %>> (url, param, Response<%= route_title %>);
+		}
+  <%- else -%>
+		public void Request<%= route_title %>(){
+			requester.Post<RequestCreateUser,ResponseCreateUser> (url, param, ResponseCreateUser);
+		}
+  <%- end -%>
+
+		public UnityAction<<%= link.response %>> <%= link.response %>;
+  <%- unless index == (config[:links].size - 1) -%>
+
+  <%- end -%>
+<% end -%>
+	}
+}

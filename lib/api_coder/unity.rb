@@ -1,7 +1,16 @@
+require 'api_coder'
+require 'api_coder/cli'
+require 'api_coder/unity/generator'
 require 'api_coder/unity/version'
 
-module ApiCoder
+module APICoder
   module Unity
-    # Your code goes here...
   end
 end
+
+APICoder::CLI.register(
+  APICoder::Unity::Generator,
+  'unity',
+  'unity config.rb',
+  'unity code generator of api_coder'
+)

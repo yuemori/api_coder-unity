@@ -1,0 +1,42 @@
+<%= "\uFEFF" %>using UnityEngine;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace Protocol{
+<% APICoder.routes.each do |route| -%>
+	[Serializable]
+	public class Request<%= route.title.to_s.camelize %>{
+  <%- route.parameters.each do |attribute| -%>
+    <%- unless attribute.serializable? -%>
+		[NonSerialized]
+    <%- end -%>
+		public <%= attribute.type.name %> <%= attribute.name %>;
+  <%- end -%>
+	}
+
+
+  <%- if route.response.array? -%>
+	[Serializable]
+	public class Response<%= route.title.to_s.camelize %>{
+		public List<<%= route.title.to_s.camelize %>Info> <%= route.title.to_s.pluarlize %>;
+	}
+
+	[Serializable]
+  public class <%= route.title.to_s.camelize %>Info{
+    <%- route.responses.each do |attribute| -%>
+		public <%= attribute.type.name -%> <%= attribute.name -%>;
+    <%- end -%>
+	}
+
+  <%- else -%>
+	[Serializable]
+	public class Response<%= route.title.to_s.camelize %>{
+  <%- route.responses.each do |attribute| -%>
+		public <%= attribute.type.name %> <%= attribute.name %>;
+  <%- end -%>
+	}
+  <%- end -%>
+
+<% end -%>
+}
